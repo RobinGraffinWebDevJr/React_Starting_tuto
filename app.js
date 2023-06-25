@@ -23,11 +23,17 @@ function ProductCategoryRow({ category }) {
     </tr>
 }
 
-function ProductTable({ products }) {
+function ProductTable({ products, inStockOnly, filterText }) {
     const rows = []
     let lastCategory = null
 
     products.forEach(product => {
+        if ( 
+            (inStockOnly && !product.stocked) ||
+            product.name.indexOf(filterText) === -1
+        ) {
+            return
+        }
         if (product.category !== lastCategory) {
             lastCategory = product.category
             rows.push(<ProductCategoryRow key={lastCategory} category={lastCategory} />)
@@ -84,7 +90,7 @@ class FilterableProductTable extends React.Component {
     constructor (props) {
         super(props) 
         this.state = {
-            filterText: 'Foot',
+            filterText: '',
             inStockOnly: false
         }
         this.handleFilterTextChange = this.handleFilterTextChange.bind(this)
@@ -102,7 +108,6 @@ class FilterableProductTable extends React.Component {
     render() {
         const { products } = this.props
         return  <React.Fragment>
-            {JSON.stringify(this.state)}
             <SearchBar 
                 filterText={this.state.filterText}
                 inStockOnly={this.state.filterText}
